@@ -129,7 +129,7 @@
       main {
         max-width: 560px;
         margin: 0 auto;
-        padding: 0 16px calc(96px + env(safe-area-inset-bottom, 0px));
+        padding: 0 16px 24px;
       }
       section { margin-top: 24px; }
       h2 {
@@ -310,16 +310,13 @@
 
       /* ---------- ad slot ---------- */
       .ad-bar {
-        position: fixed; inset-inline: 0; bottom: 0; z-index: 40;
         background: var(--surface);
         border-top: 1px solid var(--border);
         padding-bottom: env(safe-area-inset-bottom, 0px);
       }
       .ad-inner { max-width: 560px; margin: 0 auto; padding: 8px 16px; }
       .ad-slot {
-        height: 56px; display: flex; align-items: center; justify-content: center;
-        border: 2px dashed var(--border); border-radius: 8px;
-        font-size: 12px; font-weight: 700; letter-spacing: 0.2em; color: var(--dim);
+        min-height: 250px; display: flex; align-items: center; justify-content: center;
       }
 
       @media (min-width: 720px) {
@@ -458,10 +455,14 @@
       </section>
     </main>
 
-    <!-- Reserved ad slot -->
+    <!-- 忍者AdMax -->
     <div class="ad-bar">
       <div class="ad-inner">
-        <div class="ad-slot">広告枠（準備中）</div>
+        <div class="ad-slot">
+          <!-- admax -->
+          <script src="https://adm.shinobi.jp/s/4d10e11a1caad2b335cc433b6b4b31aa"></script>
+          <!-- admax -->
+        </div>
       </div>
     </div>
 
