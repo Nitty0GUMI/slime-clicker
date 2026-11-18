@@ -602,6 +602,11 @@
         if (idx >= UNITS.length) idx = UNITS.length - 1;
         var v = n / Math.pow(10, 4 * idx);
         var str = v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
+        if (parseFloat(str) >= 1000 && idx >= 1 && idx < UNITS.length - 1) {
+          idx += 1;
+          str = (parseFloat(str) / 1000).toFixed(2);
+        }
+        if (str.indexOf(".") >= 0) str = str.replace(/\.?0+$/, "");
         return str + UNITS[idx];
       }
       function fmtRate(n) {
@@ -1070,16 +1075,21 @@
       }
       render();
 
-      /* Game tick: passive production + golden slime spawn/expire (100ms) */
+      /* Game tick: passive production + golden slime spawn/expire (100ms)
+         Production is based on real elapsed time, so a backgrounded tab
+         (where timers are throttled) still produces at full rate. */
+      var lastTickAt = Date.now();
       window.setInterval(function () {
         var now = Date.now();
+        var elapsedSec = Math.min(Math.max((now - lastTickAt) / 1000, 0), 8 * 3600);
+        lastTickAt = now;
         if (goldUntil === 0 && now >= nextGoldAt) {
           goldUntil = now + 15000;
         } else if (goldUntil > 0 && now > goldUntil) {
           goldUntil = 0;
           nextGoldAt = now + 45000 + Math.random() * 60000;
         }
-        var gain = totalSpsOf(state) * 0.1;
+        var gain = totalSpsOf(state) * elapsedSec;
         if (gain > 0) {
           state.slimes += gain;
           state.totalProduced += gain;
