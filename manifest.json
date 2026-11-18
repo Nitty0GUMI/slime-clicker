@@ -1,0 +1,38 @@
+{
+  "background_color": "#e9f9ee",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "description": "タップでスライムを分裂させて増やしまくる放置クリッカーゲーム。進化・金のスライム・大発生（転生）・実績つき。",
+  "dir": "ltr",
+  "display": "standalone",
+  "icons": [
+    {
+      "purpose": "any",
+      "sizes": "192x192",
+      "src": "icon-192.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "any",
+      "sizes": "512x512",
+      "src": "icon-512.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable",
+      "sizes": "512x512",
+      "src": "icon-maskable-512.png",
+      "type": "image/png"
+    }
+  ],
+  "id": "./index.html",
+  "lang": "ja",
+  "name": "スライム増殖クリッカー",
+  "orientation": "portrait",
+  "scope": "./",
+  "short_name": "スライム増殖",
+  "start_url": "./index.html",
+  "theme_color": "#16a34a"
+}
