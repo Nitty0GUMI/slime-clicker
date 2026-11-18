@@ -465,6 +465,28 @@
       <section class="stats" aria-label="記録">
         <p class="num">累計生産 <span id="statTotal">0</span>体 ・ 総タップ <span id="statTaps">0</span>回 ・ 金のスライム <span id="statGold">0</span>回</p>
         <p id="saveStatus">自動セーブ待機中…</p>
+        <div class="transfer-box" style="margin:12px 0">
+          <p style="margin:0 0 4px;font-weight:700">セーブデータの引き継ぎ</p>
+          <p class="small dim" style="margin:0 0 8px">機種変更や別のブラウザで続きを遊ぶとき用。コードを発行して、新しい端末で読み込んでね（読み込むと今のデータは上書きされます）。</p>
+          <button type="button" class="link-btn neutral" id="exportBtn">引き継ぎコードを発行</button>
+          <button type="button" class="link-btn neutral" id="importToggleBtn">コードを読み込む</button>
+          <div id="exportBox" style="display:none;margin-top:8px">
+            <textarea id="exportText" readonly rows="3" style="width:100%;box-sizing:border-box"></textarea>
+            <p class="small dim" id="exportMsg" style="margin:4px 0 0"></p>
+          </div>
+          <div id="importBox" style="display:none;margin-top:8px">
+            <textarea id="importText" rows="3" placeholder="ここに引き継ぎコードを貼り付け" style="width:100%;box-sizing:border-box"></textarea>
+            <div style="margin-top:6px">
+              <button type="button" class="link-btn neutral" id="importBtn">読み込みを確認</button>
+            </div>
+            <div id="importConfirm" style="display:none;margin-top:6px">
+              <span style="font-weight:700;color:var(--rose)">今のデータを上書きしますか？</span>
+              <button type="button" class="link-btn" id="importYesBtn">上書きする</button>
+              <button type="button" class="link-btn neutral" id="importNoBtn">やめる</button>
+            </div>
+            <p class="small dim" id="importMsg" style="margin:4px 0 0"></p>
+          </div>
+        </div>
         <div id="resetDefault">
           <button type="button" class="link-btn" id="resetBtn">セーブデータをリセット</button>
         </div>
@@ -1098,6 +1120,79 @@
         } else { copyShareLink(); }
       });
       $("copyLinkBtn").addEventListener("click", copyShareLink);
+
+      /* ---------- save transfer (export / import code) ---------- */
+      function encodeSaveCode() {
+        var payload = JSON.stringify({ app: "slime-clicker", v: 1, state: state, savedAt: Date.now() });
+        return "SLIME1:" + btoa(unescape(encodeURIComponent(payload)));
+      }
+      function decodeSaveCode(code) {
+        code = (code || "").trim();
+        if (code.indexOf("SLIME1:") !== 0) return null;
+        try {
+          var data = JSON.parse(decodeURIComponent(escape(atob(code.slice(7).replace(/\s+/g, "")))));
+          if (!data || typeof data !== "object" || !data.state) return null;
+          return sanitizeState(data.state);
+        } catch (e) { return null; }
+      }
+      var pendingImport = null;
+      $("exportBtn").addEventListener("click", function () {
+        saveNow(false);
+        var code = encodeSaveCode();
+        var box = $("exportBox");
+        box.style.display = "block";
+        var ta = $("exportText");
+        ta.value = code;
+        var msg = $("exportMsg");
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(function () {
+            msg.textContent = "コードをコピーしたよ。新しい端末でこのページを開いて「コードを読み込む」から貼り付けてね。";
+          }, function () {
+            msg.textContent = "コードを長押しでコピーして、新しい端末で読み込んでね。";
+          });
+        } else {
+          msg.textContent = "コードを長押しでコピーして、新しい端末で読み込んでね。";
+        }
+        ta.focus();
+        ta.select();
+      });
+      $("importToggleBtn").addEventListener("click", function () {
+        var box = $("importBox");
+        box.style.display = box.style.display === "none" ? "block" : "none";
+      });
+      $("importBtn").addEventListener("click", function () {
+        var parsed = decodeSaveCode($("importText").value);
+        var msg = $("importMsg");
+        if (!parsed) {
+          pendingImport = null;
+          $("importConfirm").style.display = "none";
+          msg.textContent = "コードが読み取れなかったよ。発行したコード全体を貼り付けてね。";
+          return;
+        }
+        pendingImport = parsed;
+        msg.textContent = "コードを確認したよ（累計生産 " + fmt(parsed.totalProduced) + "体 のデータです）。";
+        $("importConfirm").style.display = "block";
+      });
+      $("importNoBtn").addEventListener("click", function () {
+        pendingImport = null;
+        $("importConfirm").style.display = "none";
+        $("importMsg").textContent = "";
+      });
+      $("importYesBtn").addEventListener("click", function () {
+        if (!pendingImport) return;
+        state = pendingImport;
+        pendingImport = null;
+        offlineGain = null;
+        els.offlinePanel.style.display = "none";
+        lastSavedJson = "";
+        saveNow(true);
+        $("importConfirm").style.display = "none";
+        $("importBox").style.display = "none";
+        $("importText").value = "";
+        $("importMsg").textContent = "";
+        render();
+        pushToast("セーブデータを読み込みました");
+      });
       els.clickBuyBtn.addEventListener("click", buyClick);
       $("claimOfflineBtn").addEventListener("click", function () {
         if (offlineGain === null) return;
