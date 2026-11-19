@@ -517,7 +517,9 @@
         { id: "pool", name: "分裂プール", desc: "スライムが泳ぐと増える不思議な水たまり", baseCost: 120, rate: 1.5, emoji: "💧" },
         { id: "tower", name: "スライムタワー", desc: "積み上がるほど分裂が加速する", baseCost: 1100, rate: 9, emoji: "🗼" },
         { id: "factory", name: "スライム工場", desc: "ベルトコンベアで大量生産", baseCost: 12000, rate: 55, emoji: "🏭" },
-        { id: "planet", name: "スライム惑星", desc: "惑星まるごとスライム化計画", baseCost: 130000, rate: 320, emoji: "🪐" }
+        { id: "planet", name: "スライム惑星", desc: "惑星まるごとスライム化計画", baseCost: 130000, rate: 320, emoji: "🪐" },
+        { id: "galaxy", name: "スライム銀河", desc: "銀河ぜんぶがぷるぷる震える", baseCost: 1800000, rate: 2100, emoji: "🌌" },
+        { id: "dimension", name: "スライム次元", desc: "別次元から無限に湧いてくる", baseCost: 24000000, rate: 13500, emoji: "🌀" }
       ];
       var COST_GROWTH = 1.15;
 
@@ -529,7 +531,12 @@
         { id: "up-pool-2", name: "神秘の泉化", desc: "分裂プールの生産 ×2", target: "pool", threshold: 25, cost: 150000 },
         { id: "up-factory-1", name: "24時間フル稼働", desc: "スライム工場の生産 ×2", target: "factory", threshold: 10, cost: 700000 },
         { id: "up-tower-2", name: "天空タワー", desc: "スライムタワーの生産 ×2", target: "tower", threshold: 25, cost: 900000 },
-        { id: "up-planet-1", name: "テラフォーミング", desc: "スライム惑星の生産 ×2", target: "planet", threshold: 5, cost: 5000000 }
+        { id: "up-planet-1", name: "テラフォーミング", desc: "スライム惑星の生産 ×2", target: "planet", threshold: 5, cost: 5000000 },
+        { id: "up-planet-2", name: "惑星まるごと発酵", desc: "スライム惑星の生産 ×2", target: "planet", threshold: 25, cost: 90000000 },
+        { id: "up-galaxy-1", name: "星雲ブレンド", desc: "スライム銀河の生産 ×2", target: "galaxy", threshold: 10, cost: 120000000 },
+        { id: "up-galaxy-2", name: "銀河大回転", desc: "スライム銀河の生産 ×2", target: "galaxy", threshold: 25, cost: 1500000000 },
+        { id: "up-dimension-1", name: "次元圧縮", desc: "スライム次元の生産 ×2", target: "dimension", threshold: 10, cost: 1800000000 },
+        { id: "up-dimension-2", name: "無限ループ回廊", desc: "スライム次元の生産 ×2", target: "dimension", threshold: 25, cost: 20000000000 }
       ];
 
       var EVOLUTIONS = [
@@ -538,7 +545,9 @@
         { id: "red", name: "赤スライム", threshold: 2500, body: "#ef4444", belly: "#fecaca" },
         { id: "purple", name: "紫スライム", threshold: 50000, body: "#a855f7", belly: "#e9d5ff" },
         { id: "gold", name: "金スライム", threshold: 1000000, body: "#f59e0b", belly: "#fde68a" },
-        { id: "rainbow", name: "虹スライム", threshold: 25000000, body: "#f472b6", belly: "#fef9c3", rainbow: true }
+        { id: "rainbow", name: "虹スライム", threshold: 25000000, body: "#f472b6", belly: "#fef9c3", rainbow: true },
+        { id: "galaxy", name: "銀河スライム", threshold: 500000000, body: "#6366f1", belly: "#c7d2fe", galaxy: true },
+        { id: "dark", name: "ダークスライム", threshold: 10000000000, body: "#503a7d", belly: "#a78bfa" }
       ];
 
       var ACHIEVEMENTS = [
@@ -553,7 +562,15 @@
         { id: "evo-gold", name: "黄金伝説", desc: "金スライムに進化", check: function (s) { return s.totalProduced >= 1000000; } },
         { id: "gold-1", name: "金のつかみ取り", desc: "金のスライムを捕まえる", check: function (s) { return s.goldCaught >= 1; } },
         { id: "prestige-1", name: "大発生デビュー", desc: "はじめての大発生", check: function (s) { return s.prestiges >= 1; } },
-        { id: "gems-50", name: "ジェムコレクター", desc: "発生ジェムを50個所持", check: function (s) { return s.gems >= 50; } }
+        { id: "gems-50", name: "ジェムコレクター", desc: "発生ジェムを50個所持", check: function (s) { return s.gems >= 50; } },
+        { id: "taps-10000", name: "指が覚えた", desc: "累計10,000回タップ", check: function (s) { return s.totalTaps >= 10000; } },
+        { id: "produced-1b", name: "スライム銀河の主", desc: "累計10億体生産", check: function (s) { return s.totalProduced >= 1000000000; } },
+        { id: "produced-10b", name: "スライム次元の主", desc: "累計100億体生産", check: function (s) { return s.totalProduced >= 10000000000; } },
+        { id: "evo-galaxy", name: "銀河到達", desc: "銀河スライムに進化", check: function (s) { return s.totalProduced >= 500000000; } },
+        { id: "evo-dark", name: "深淵のスライム", desc: "ダークスライムに進化", check: function (s) { return s.totalProduced >= 10000000000; } },
+        { id: "gen-galaxy-10", name: "銀河量産体制", desc: "スライム銀河を10体所持", check: function (s) { return (s.generators.galaxy || 0) >= 10; } },
+        { id: "prestige-5", name: "大発生マニア", desc: "大発生を5回行う", check: function (s) { return s.prestiges >= 5; } },
+        { id: "gems-200", name: "ジェムホルダー", desc: "発生ジェムを200個所持", check: function (s) { return s.gems >= 200; } }
       ];
 
       /* ================= State ================= */
@@ -665,13 +682,18 @@
       function slimeSvg(stage, gold, uid) {
         var body = gold ? "#fbbf24" : stage.body;
         var belly = gold ? "#fef3c7" : stage.belly;
-        var fill = (stage.rainbow && !gold) ? "url(#rainbowGrad-" + uid + ")" : body;
+        var fill = body;
+        if (!gold && stage.rainbow) fill = "url(#rainbowGrad-" + uid + ")";
+        else if (!gold && stage.galaxy) fill = "url(#galaxyGrad-" + uid + ")";
         return '' +
         '<svg viewBox="0 0 200 170" preserveAspectRatio="xMidYMax meet" style="display:block;width:100%;height:100%" role="img" aria-hidden="true">' +
           '<defs><linearGradient id="rainbowGrad-' + uid + '" x1="0" y1="0" x2="1" y2="1">' +
             '<stop offset="0%" stop-color="#f87171"/><stop offset="25%" stop-color="#fbbf24"/>' +
             '<stop offset="50%" stop-color="#4ade80"/><stop offset="75%" stop-color="#60a5fa"/>' +
-            '<stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>' +
+            '<stop offset="100%" stop-color="#c084fc"/></linearGradient>' +
+            '<linearGradient id="galaxyGrad-' + uid + '" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0%" stop-color="#312e81"/><stop offset="45%" stop-color="#7c3aed"/>' +
+            '<stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>' +
           '<ellipse cx="100" cy="154" rx="70" ry="10" fill="rgba(20,83,45,0.18)"/>' +
           '<path d="M100 16 C 141 16 169 61 169 103 C 169 138 139 153 100 153 C 61 153 31 138 31 103 C 31 61 59 16 100 16 Z" fill="' + fill + '"/>' +
           '<ellipse cx="100" cy="128" rx="46" ry="20" fill="' + belly + '" opacity="0.55"/>' +
